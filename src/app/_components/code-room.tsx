@@ -9,24 +9,26 @@ export default function CodeRoom() {
 
   function handleEditorWillMount(monaco: Monaco) {
     monaco.languages.register({
-      id: 'd2'
+      id: 'd2',
+      extensions: [".d2"],
+      aliases: ["d2", "d2"],
     });
+
     monaco.languages.setMonarchTokensProvider('d2', {
       keywords: [
+        "true",
+        "false"
       ],
 
-      typeKeywords: [
-      ],
-
-      selectors: ["->", "->*", "=>", "~", "~*"],
+      selectors: /[\->|\->\*|=>|~|~\*]/,
 
       // we include these common regular expressions
-      symbols: /[{|}|:|;|\->]+/,
+      symbols: /[{|}|:|;]+/,
 
       // The main tokenizer for our languages
       tokenizer: {
         root: [
-          [/.*:/, 'type.identifier'],  // to show class names nicely
+          [/[a-z_$][-\w$]*/, { cases: { '@keywords': 'keyword', '@default': 'variable' } }],
 
           // whitespace
           { include: '@whitespace' },
@@ -34,12 +36,8 @@ export default function CodeRoom() {
           // delimiters and operators
           // [/[{|}|:]/, '@brackets'],
           // [/[<>](?!@symbols)/, '@brackets'],
-          [/@symbols/, {
-            cases: {
-              '@selectors': 'operator',
-              '@default': ''
-            }
-          }],
+          [/@symbols/, 'operators'],
+          [/@selectors/, 'attribute'],
 
           // numbers
           [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
@@ -50,11 +48,10 @@ export default function CodeRoom() {
           [/[;,.]/, 'delimiter'],
 
           // strings
-          [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
-
+          // [/:(\w|\s)\w+$/, 'type.identifier'],
         ],
         string: [
-          // [/[^\\"]+/, 'string'],
+          // [/:(\w|\s)\w+$/, 'type.identifier'],
           // [/@escapes/, 'string.escape'],
           // [/\\./, 'string.escape.invalid'],
           // [/"/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
@@ -90,6 +87,7 @@ export default function CodeRoom() {
     </div>
   );
 }
+
 
 const TEST_STRING = `vars: {
   d2-config: {
