@@ -4,6 +4,9 @@ import { Editor, Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { useRef, useState } from "react";
 import { D2Preview } from "./d2-preview";
+import * as Y from 'yjs';
+import { WebrtcProvider } from 'y-webrtc';
+import { MonacoBinding } from 'y-monaco'
 
 export default function CodeRoom() {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
@@ -71,7 +74,26 @@ export default function CodeRoom() {
 
   function handleEditorDidMount(editor: editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
-    editor.getModel()?.setValue(TEST_STRING)
+
+    const ydoc = new Y.Doc();
+
+    // TODO: room id
+    // TODO: server provided password after auth
+    const provider = new WebrtcProvider("ROOM_ID", ydoc, { password: 'PASSWORD' });
+    new MonacoBinding(ydoc.getText(), editor.getModel()!, new Set([editor]), provider.awareness);
+
+    // TODO: set default value from server
+    // ydoc.getText().insert(0, "text")
+    // provider.doc.on('afterAllTransactions', (doc) => {
+    //   console.log(doc)
+    //   if (doc.getText().length === 0) {
+    //   }
+    // })
+    // console.log(editor.getModel()?.getValue().length)
+    // if (editor.getModel()?.getValue() === "") {
+    //   editor.getModel()?.setValue(TEST_STRING)
+    // }
+
   }
 
   return (

@@ -18,6 +18,8 @@ import (
 	"oss.terrastruct.com/d2/lib/textmeasure"
 )
 
+// TODO: caching, cors rules
+
 func render(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
