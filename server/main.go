@@ -19,12 +19,15 @@ import (
 )
 
 func render(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	ctx := context.Background()
 	script := r.URL.Query().Get("script")
 	scriptBytes := bytes.NewBufferString(script)
 	data, err := getGraphSVG(ctx, scriptBytes, &d2svg.RenderOpts{})
 	if err != nil {
 		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

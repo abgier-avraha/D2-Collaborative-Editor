@@ -2,10 +2,12 @@
 
 import { Editor, Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
-import { useMemo, useRef } from "react";
+import { useRef, useState } from "react";
+import { D2Preview } from "./d2-preview";
 
 export default function CodeRoom() {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
+  const [script, setScript] = useState<string>();
 
   function handleEditorWillMount(monaco: Monaco) {
     monaco.languages.register({
@@ -75,14 +77,21 @@ export default function CodeRoom() {
   return (
     <div className="h-full flex flex-col">
       <div>test header</div>
-      <Editor
-        className="flex-1"
-        language={"d2"}
-        defaultValue={"// your code here"}
-        theme={"vs-dark"}
-        onMount={handleEditorDidMount}
-        beforeMount={handleEditorWillMount}
-      />
+      <div className="flex flex-row flex-1 overflow-hidden">
+        <div className="basis-1/2">
+          <Editor
+            language={"d2"}
+            defaultValue={"// your code here"}
+            theme={"vs-dark"}
+            onMount={handleEditorDidMount}
+            beforeMount={handleEditorWillMount}
+            onChange={v => setScript(v)}
+          />
+        </div>
+        <div className="basis-1/2 overflow-auto">
+          <D2Preview script={script} />
+        </div>
+      </div>
       <div>test footer</div>
     </div>
   );
